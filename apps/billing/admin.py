@@ -1,3 +1,4 @@
 from django.contrib import admin
+from apps.billing.models.masters import Product,AmountDenomination
 
-# Register your models here.
+admin.site.register([Product,AmountDenomination])
