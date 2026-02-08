@@ -1,0 +1,100 @@
+{% extends "email/base_email.html" %}
+
+{% block title %}Invoice - Order #{{ order.code }}{% endblock %}
+
+{% block template %}
+
+    <p>Your purchase has been completed successfully. Here are your invoice details:</p>
+
+    <p><strong>Order Code:</strong> {{ order.code }}</p>
+    <p><strong>Email:</strong> {{ order.customer_email }}</p>
+    <p><strong>Date:</strong> {{ order.purchase_date|date:"d-m-Y H:i" }}</p>
+
+    <!-- Items Table -->
+    <h3 style="margin-bottom: 5px;">Bill Details</h3>
+    <div class="table-content">
+        <table class="table-bordered" width="100%" cellpadding="8" cellspacing="0" aria-describedby="Purchase Items">
+            <thead>
+                <tr>
+                    <th style="text-align: center; width: 5%;">S.No</th>
+                    <th style="text-align: center; width: 12%;">Product ID</th>
+                    <th style="text-align: center; width: 12%;">Unit Price</th>
+                    <th style="text-align: center; width: 8%;">Qty</th>
+                    <th style="text-align: center; width: 15%;">Purchase Price</th>
+                    <th style="text-align: center; width: 8%;">Tax %</th>
+                    <th style="text-align: center; width: 15%;">Tax Amount</th>
+                    <th style="text-align: center; width: 15%;">Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td style="text-align: center;">{{ forloop.counter }}</td>
+                    <td style="text-align: center;">{{ item.product.code }}</td>
+                    <td style="text-align: right;">{{ item.unit_price }}</td>
+                    <td style="text-align: center;">{{ item.quantity }}</td>
+                    <td style="text-align: right;">{{ item.subtotal }}</td>
+                    <td style="text-align: center;">{{ item.tax_percentage }}%</td>
+                    <td style="text-align: right;">{{ item.tax_amount }}</td>
+                    <td style="text-align: right;">{{ item.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Summary -->
+    <h3 style="margin-bottom: 5px;">Summary</h3>
+    <div class="table-content">
+        <table class="table-bordered" width="50%" cellpadding="8" cellspacing="0" aria-describedby="Order Summary">
+            <tbody>
+                <tr>
+                    <td><strong>Total Price (without tax)</strong></td>
+                    <td style="text-align: right;">{{ order.total_before_tax }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Tax Payable</strong></td>
+                    <td style="text-align: right;">{{ order.total_tax }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Net Price (Rounded Down)</strong></td>
+                    <td style="text-align: right;">{{ order.total_amount }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Amount Paid</strong></td>
+                    <td style="text-align: right;">{{ order.amount_paid }}</td>
+                </tr>
+                <tr style="background-color: #f2f2f2;">
+                    <td><strong>Balance to Customer</strong></td>
+                    <td style="text-align: right; font-weight: bold;">{{ order.change_given }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Balance Denomination Breakdown -->
+    {% if change_details %}
+    <h3 style="margin-bottom: 5px;">Balance Denomination Breakdown</h3>
+    <div class="table-content">
+        <table class="table-bordered" width="30%" cellpadding="8" cellspacing="0" aria-describedby="Change Breakdown">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">Denomination</th>
+                    <th style="text-align: center;">Count</th>
+                    <th style="text-align: center;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detail in change_details %}
+                <tr>
+                    <td style="text-align: center;">{{ detail.denomination.value }}</td>
+                    <td style="text-align: center;">{{ detail.count }}</td>
+                    <td style="text-align: right;">{{ detail.get_total_value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+{% endblock %}

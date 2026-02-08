@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Billing System{% endblock %}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; padding: 20px; }
+        .container { max-width: 960px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        h2 { margin-bottom: 20px; color: #1d2939; }
+        h3 { margin-bottom: 10px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { padding: 8px 12px; border: 1px solid #ddd; text-align: left; }
+        th { background: #f2f2f2; font-size: 14px; }
+        td { font-size: 14px; }
+        input[type="text"], input[type="email"], input[type="number"] {
+            padding: 6px 10px; border: 1px solid #ccc; border-radius: 3px;
+        }
+        .btn {
+            padding: 8px 16px; border: none; border-radius: 3px;
+            cursor: pointer; font-size: 14px; display: inline-block; text-decoration: none;
+        }
+        .btn-primary { background: #007bff; color: #fff; }
+        .btn-success { background: #28a745; color: #fff; }
+        .btn-danger { background: #dc3545; color: #fff; }
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+        .btn:hover { opacity: 0.9; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .hidden { display: none; }
+        .mb-10 { margin-bottom: 10px; }
+        .mb-20 { margin-bottom: 20px; }
+        .mt-20 { margin-top: 20px; }
+        .alert {
+            padding: 10px 15px; border-radius: 3px; margin-bottom: 15px;
+            white-space: pre-line;
+        }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .nav {
+            display: flex; gap: 20px; margin-bottom: 20px;
+            padding-bottom: 10px; border-bottom: 2px solid #007bff;
+        }
+        .nav a { text-decoration: none; color: #007bff; font-weight: bold; font-size: 15px; }
+        .nav a:hover { text-decoration: underline; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="{% url 'billing-form' %}">New Bill</a>
+        </div>
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
