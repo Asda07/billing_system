@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.api.serializers import PurchaseOrderCreateSerializer, GenerateBillSerializer
-from apps.api.utils import validate_balance_possible
+from apps.api.utils import validate_balance_possible, send_invoice_email
 from apps.billing.models import Product, PurchaseOrder
 from core.settings import VALID_DENOMINATIONS
 
@@ -179,6 +179,10 @@ class GenerateBillView(APIView):
 
         with transaction.atomic():
             order = serializer.save()
+
+        # Send invoice email in background — doesn't block the response and for this simple billing system.
+        # For production grade we can go with celery
+        send_invoice_email(order)
 
         items_response = []
         for item in purchase_items:

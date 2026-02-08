@@ -1,7 +1,12 @@
+import threading
 from decimal import Decimal
 
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.utils import timezone
+
 from apps.billing.models import AmountDenomination
-from core.settings import VALID_DENOMINATIONS
+from core.settings import VALID_DENOMINATIONS, SERVER_EMAIL
 
 
 def _find_change(denominations, amount):
@@ -143,3 +148,48 @@ def validate_balance_possible(order_instance, paid_denomination_data):
         'paid': paid_details,
         'change': change_breakdown,
     }
+
+
+def _send_invoice(order):
+    """Renders HTML invoice template and sends as email."""
+    items = order.purchase_items.select_related('product').all()
+    change_details = order.denomination_details.filter(
+        type='balance'
+    ).select_related('denomination')
+
+    # Attach computed fields to items for the template
+    for item in items:
+        item.subtotal = item.get_subtotal()
+        item.tax_amount = item.get_tax_amount()
+        item.total = item.get_total()
+
+    html_content = render_to_string(
+        'email/order/invoice_notification.html',
+        {
+            'recipient_name': order.customer_email,
+            'order': order,
+            'items': items,
+            'change_details': change_details,
+        },
+    )
+
+    try:
+        email = EmailMessage(
+            subject=f"Invoice - Order #{order.code}",
+            body=html_content,
+            from_email=SERVER_EMAIL,
+            to=[order.customer_email],
+        )
+        email.content_subtype = 'html'
+        email.send(fail_silently=False)
+
+        order.invoice_sent = True
+        order.invoice_sent_at = timezone.now()
+        order.save(update_fields=['invoice_sent', 'invoice_sent_at'])
+    except Exception:
+        pass
+
+
+def send_invoice_email(order):
+    """Fire and forget — sends invoice in a background thread."""
+    threading.Thread(target=_send_invoice, args=(order,)).start()
