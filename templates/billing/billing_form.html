@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Billing System - New Bill{% endblock %}
+
+{% block content %}
+<h2>New Bill</h2>
+
+<div id="error-box" class="alert alert-danger hidden"></div>
+
+<input type="hidden" id="order-code" value="">
+{% csrf_token %}
+
+<!-- Customer Email -->
+<div class="form-group">
+    <label>Customer Email</label>
+    <input type="email" id="customer-email" placeholder="Enter customer email" style="width: 320px;">
+</div>
+
+<!-- Products Section -->
+<h3>Products</h3>
+<table id="product-table">
+    <thead>
+        <tr>
+            <th style="width: 5%;" class="text-center">#</th>
+            <th style="width: 40%;">Product Code</th>
+            <th style="width: 20%;">Quantity</th>
+            <th style="width: 10%;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="product-row">
+            <td class="text-center">1</td>
+            <td><input type="text" name="product_code" placeholder="e.g. P001" style="width: 100%;"></td>
+            <td><input type="number" name="quantity" min="1" value="1" style="width: 100%;"></td>
+            <td class="text-center"><button type="button" class="btn btn-danger btn-sm remove-product">Remove</button></td>
+        </tr>
+    </tbody>
+</table>
+
+<button type="button" id="add-product" class="btn btn-primary btn-sm mb-20">+ Add Product</button>
+
+<div class="mb-20">
+    <button type="button" id="calculate-total" class="btn btn-success">Calculate Total</button>
+</div>
+
+<!-- Totals Section -->
+<div id="totals-section" class="hidden mt-20">
+    <h3>Order Summary</h3>
+    <table style="width: 50%;">
+        <tr>
+            <td><strong>Order Code</strong></td>
+            <td id="display-order-code"></td>
+        </tr>
+        <tr>
+            <td><strong>Total Before Tax</strong></td>
+            <td class="text-right" id="total-before-tax"></td>
+        </tr>
+        <tr>
+            <td><strong>Total Tax</strong></td>
+            <td class="text-right" id="total-tax"></td>
+        </tr>
+        <tr style="background: #f2f2f2;">
+            <td><strong>Total Amount (Rounded Down)</strong></td>
+            <td class="text-right" style="font-weight: bold;" id="total-amount"></td>
+        </tr>
+    </table>
+</div>
+
+<!-- Denomination Section -->
+<div id="denomination-section" class="hidden mt-20">
+    <h3>Payment Denominations</h3>
+    <table style="width: 40%;">
+        <thead>
+            <tr>
+                <th class="text-center">Denomination</th>
+                <th class="text-center">Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for denom in denominations %}
+            <tr>
+                <td class="text-center">{{ denom }}</td>
+                <td class="text-center">
+                    <input type="number" class="denom-input" data-value="{{ denom }}" min="0" value="0" style="width: 80px; text-align: center;">
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="form-group" style="width: 40%;">
+        <label>Total Paid Amount</label>
+        <input type="text" id="paid-amount" readonly style="width: 150px; background: #f2f2f2; font-weight: bold;">
+    </div>
+
+    <div class="mt-20">
+        <button type="button" id="generate-bill" class="btn btn-success">Generate Bill</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/billing.js' %}"></script>
+{% endblock %}
