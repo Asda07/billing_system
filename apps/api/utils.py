@@ -186,8 +186,8 @@ def _send_invoice(order):
         order.invoice_sent = True
         order.invoice_sent_at = timezone.now()
         order.save(update_fields=['invoice_sent', 'invoice_sent_at'])
-    except Exception:
-        pass
+    except Exception as e:
+        print(str(e))
 
 
 def send_invoice_email(order):
